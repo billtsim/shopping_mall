@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.a88.mapper.userMapper">
+
+    <sql id="commonSelect">
+        select id, username, email, password, role, createTime, updateTime, resetToken, tokenCreationTime   from user
+    </sql>
+
+    <insert id="insert" parameterType="com.a88.Pojo.user">
+        INSERT INTO user (username, email, password, role, createTime, updateTime)
+        VALUES (#{username}, #{email}, #{password}, #{role}, #{createTime}, #{updateTime})
+    </insert>
+    <update id="update">
+        update user
+        <set>
+            <if test="username != null and username != ''">
+                username = #{username},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            <if test="role != null and role != ''">
+                role = #{role},
+            </if>
+            <if test="createTime != null">
+                createTime = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                updateTime = #{updateTime},
+            </if>
+            <if test="resetToken != null and resetToken != ''">
+                resetToken = #{resetToken},
+            </if>
+            <if test="tokenCreationTime != null">
+                tokenCreationTime = #{tokenCreationTime}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <select id="getByUsernameOrEmail" resultType="com.a88.Pojo.user">
+        <include refid="commonSelect"/>
+        WHERE (username = #{usernameOrEmail} OR email = #{usernameOrEmail})
+    </select>
+    <select id="getByEmail" resultType="com.a88.Pojo.user">
+        <include refid="commonSelect"/>
+        WHERE email = #{email}
+    </select>
+    <select id="getByResetToken" resultType="com.a88.Pojo.user">
+        <include refid="commonSelect"/>
+        WHERE resetToken = #{resetToken}
+    </select>
+    <select id="getUserInfo" resultType="com.a88.Pojo.user">
+        select id, username, email, role from user
+        <where>
+            <trim prefixOverrides="AND">
+                <if test="id != null and id != ''">
+                    id = #{id}
+                </if>
+                <if test="username != null and username != ''">
+                    and username = #{username}
+                </if>
+                <if test="email != null and email != ''">
+                    and email = #{email}
+                </if>
+            </trim>
+        </where>
+    </select>
+</mapper>

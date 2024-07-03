@@ -1,0 +1,77 @@
+server:
+  port:
+  tomcat:
+    connection-timeout: 5000
+
+
+# 定義map集合
+user:
+  name: bill
+  age: 23
+  password: 123456
+
+# 定義array/list/set
+hobby:
+  - java
+  - c
+  - game
+  - listening music
+
+
+# file name
+spring:
+  application:
+    name: Mybatis_startup
+# database info
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/db_01
+    username: root
+    password: 1234
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: bill85504@gmail.com
+    password: cgdc lgye bddk taii
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  # set file size
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+  mvc:
+    async:
+      request-timeout: 30000
+# logback and a_column --> aColumn
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+  type-handlers-package: com.a88.controller
+  mapper-locations: classpath:C:\Users\User\OneDrive\桌面\git\Java-SpringAI\abccc\Mybatis_startup\src\main\resources\com\a88\mapper\*.xml
+# google的cloud storage 配置
+google:
+  cloud-storage:
+    projectID: JavaProject
+    bucketName: fileupload-java
+
+Set-Cookie:
+  myCookie: value
+  SameSite: None
+  Secure:
+
+stripe:
+  api:
+    key: sk_test_51PXxoGRtNnaFIl7oiQej8EG6LhaF8KpgeNd6ytoJjBftVSVL93GV6BmEE9xKRfX0NkFp2h2ykXa1wY6g1sUXixJr00mfDUpS1g
+
+
+
+
+

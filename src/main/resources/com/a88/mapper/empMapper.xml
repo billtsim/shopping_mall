@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace= "com.a88.mapper.empMapper">
+
+    <sql id="commonSelect">
+        select id, username, fullName, gender, entryDate, job, create_time, update_time, department, password
+        from db_01.tb_employee
+    </sql>
+
+
+    <update id="update">
+        update db_01.tb_employee
+        <set>
+            <if test="username != null and username != '' ">
+                username = #{username},
+            </if>
+            <if test="fullName != null and fullName != '' ">
+                fullName = #{fullName},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="job != null">
+                job = #{job},
+            </if>
+            <if test="entryDate != null">
+                entryDate = #{entryDate},
+            </if>
+            <if test="department != null">
+                department = #{department},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+
+    <!--    <update id="update2">-->
+<!--        update db_01.tb_employee-->
+<!--        <set>-->
+<!--            <if test="username != null">username = #{username},</if>-->
+<!--            <if test="fullName != null">fullName = #{fullName},</if>-->
+<!--            <if test="gender != null">gender = #{gender},</if>-->
+<!--            <if test="entryDate != null">entrydate = #{entryDate},</if>-->
+<!--            <if test="job != null">job = #{job},</if>-->
+<!--            <if test="updateTime != null">update_time = #{updateTime},</if>-->
+<!--            <if test="department != null">department = #{department}</if>-->
+<!--        </set>-->
+<!--        <where>-->
+<!--           id = #{id}-->
+<!--        </where>-->
+<!--    </update>-->
+
+<!--    &lt;!&ndash; foreach->-->
+<!--       collection: 遍曆的集合-->
+<!--       item:遍曆出來的元素-->
+<!--       separator: 分隔符-->
+<!--       open: 遍曆開始前拼接的SQL片段-->
+<!--       close: 遍曆結束後拼接的SQL片段-->
+<!--       &ndash;&gt;-->
+<!--    <delete id="deleteById">-->
+<!--        delete from tb_employee where id in-->
+<!--        <foreach collection="ids" item="id" separator="," open="(" close=")">-->
+<!--            #{id}-->
+<!--        </foreach>-->
+<!--    </delete>-->
+
+
+<!--    <select id="conditionCheck" resultType="com.a88.Pojo.employee">-->
+<!--        <include refid="commonSelect"/>-->
+<!--        <where>-->
+<!--            <if test="name != null">-->
+<!--                username like concat('%', #{name}, '%')-->
+<!--            </if>-->
+<!--            <if test="gender != null">-->
+<!--                and gender = #{gender}-->
+<!--            </if>-->
+<!--            <if test="begin != null and end != null">-->
+<!--                and entrydate between #{begin} and #{end}-->
+<!--            </if>-->
+<!--        </where>-->
+<!--            order by update_time desc-->
+<!--    </select>-->
+    <select id="page" resultType="com.a88.Pojo.employee">
+        <include refid="commonSelect"/>
+        <where>
+            <if test="name != null and name != '' ">
+                username like concat('%', #{name}, '%')
+            </if>
+            <if test="gender != null">
+                and gender = #{gender}
+            </if>
+            <if test="begin != null and end != null">
+                and entryDate between #{begin} and #{end}
+            </if>
+        </where>
+        limit #{start}, #{pageSize}
+
+    </select>
+
+
+    <delete id="delete">
+        delete from tb_employee where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

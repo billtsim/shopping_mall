@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.a88.mapper.cartMapper">
+
+    <!-- Result Map -->
+    <resultMap id="CartResultMap" type="com.a88.Pojo.cartItemDetail">
+        <id property="id" column="id"/>
+        <result property="userId" column="userId"/>
+        <result property="productId" column="productId"/>
+        <result property="quantity" column="quantity"/>
+        <result property="selected" column="selected"/>
+        <result property="creatingTime" column="creatingTime"/>
+        <result property="updateTime" column="updateTime"/>
+        <association property="productInfo" javaType="com.a88.Pojo.products">
+            <id property="id" column="productInfo_id"/>
+            <result property="name" column="productInfo_name"/>
+            <result property="price" column="productInfo_price"/>
+            <result property="originalPrice" column="productInfo_originalPrice"/>
+            <result property="discount" column="productInfo_discount"/>
+            <result property="categories" column="productInfo_categories"/>
+            <result property="mainImage" column="productInfo_mainImage"/>
+            <result property="createTime" column="productInfo_createTime"/>
+        </association>
+    </resultMap>
+
+    <insert id="addToCart" parameterType="com.a88.Pojo.cart">
+        INSERT INTO cart (userId, productId, quantity, selected, creatingTime, updateTime)
+        VALUES (#{userId}, #{productId}, #{quantity}, #{selected}, #{creatingTime}, #{updateTime})
+    </insert>
+
+    <delete id="deleteItemFromCart">
+        DELETE FROM cart WHERE userId = #{userId} AND productId = #{productId}
+    </delete>
+
+    <!-- Select cart items with product details by userId -->
+    <select id="getCartByUserId" parameterType="int" resultMap="CartResultMap">
+        SELECT
+            ci.id,
+            ci.userId,
+            ci.productId,
+            ci.quantity,
+            ci.selected,
+            ci.creatingTime,
+            ci.updateTime,
+            p.id AS productInfo_id,
+            p.name AS productInfo_name,
+            p.price AS productInfo_price,
+            p.originalPrice AS productInfo_originalPrice,
+            p.discount AS productInfo_discount,
+            p.categories AS productInfo_categories,
+            p.mainImage AS productInfo_mainImage,
+            p.createTime AS productInfo_createTime
+        FROM
+            cart ci
+                JOIN products p ON ci.productId = p.id
+        WHERE
+            ci.userId = #{userId}
+    </select>
+
+</mapper>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace= "com.a88.mapper.productMapper">
+
+    <resultMap id="ProductResultMap" type="com.a88.Pojo.products">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="price" column="price"/>
+        <result property="originalPrice" column="originalPrice"/>
+        <result property="discount" column="discount"/>
+        <result property="categories" column="categories"/>
+        <result property="imageUrl" column="imageUrl"/>
+        <result property="tags" column="tags"/> <!-- 添加对tags字段的映射 -->
+        <result property="createTime" column="createTime"/> <!-- 添加对createTime字段的映射 -->
+        <result property="updateTime" column="updateTime"/>
+        <result property="mainImage" column="mainImage"/>
+        <result property="minRequirements" column="minRequirements"/>
+        <result property="recRequirements" column="recRequirements"/>
+    </resultMap>
+
+    <sql id="commonSelect">
+        select id, name, description, price, originalPrice, categories, imageUrl, tags, discount, createTime, updateTime, mainImage, minRequirements, recRequirements from products
+    </sql>
+
+    <insert id="add">
+        insert into products (name, description, originalPrice, categories, imageUrl, tags, discount, mainImage, minRequirements, recRequirements)
+        values (#{name}, #{description}, #{originalPrice}, #{categories}, #{imageUrl}, #{tags}, #{discount}, #{mainImage}, #{minRequirements}, #{recRequirements})
+    </insert>
+    <update id="update">
+        update db_01.products
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description},
+            </if>
+            <if test="originalPrice != null">
+                originalPrice = #{originalPrice},
+            </if>
+            <if test="categories != null and categories != ''">
+                categories = #{categories},
+            </if>
+            <if test="tags != null and tags != ''">
+                tags = #{tags},
+            </if>
+            <if test="discount != null">
+                discount = #{discount},
+            </if>
+            <if test="imageUrl != ''">
+                imageUrl = #{imageUrl},
+            </if>
+            <if test="updateTime != null">
+                updateTime = #{updateTime},
+            </if>
+            <if test="mainImage != ''">
+                mainImage = #{mainImage},
+            </if>
+            <if test="minRequirements != '' and minRequirements != null">
+                minRequirements = #{minRequirements},
+            </if>
+            <if test="recRequirements != '' and recRequirements != null">
+                recRequirements = #{recRequirements}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <delete id="delete">
+        delete from products where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="allProducts" resultMap="ProductResultMap">
+        <include refid="commonSelect"/>
+        <where>
+            <if test="name != null and name != ''">
+                name like concat('%', #{name}, '%')
+            </if>
+            <if test="categories != null and categories != ''">
+                AND FIND_IN_SET(#{categories}, categories)
+            </if>
+            <if test="tags != null and tags != ''">
+                AND FIND_IN_SET(#{tags}, tags)
+            </if>
+            <if test="minPrice != null and maxPrice != null">
+                AND price BETWEEN #{minPrice} AND #{maxPrice}
+            </if>
+        </where>
+        <if test="sortBy != null and sortBy != ''">
+            ORDER BY
+            <choose>
+                <when test="sortBy == 'priceAsc'">
+                    price ASC
+                </when>
+                <when test="sortBy == 'priceDesc'">
+                    price DESC
+                </when>
+                <when test="sortBy == 'nameAsc'">
+                    name ASC
+                </when>
+                <when test="sortBy == 'createTime'">
+                    createTime DESC
+                </when>
+            </choose>
+        </if>
+        <if test="offset != -1">
+            LIMIT #{offset}, #{limit}
+        </if>
+
+    </select>
+
+    <select id="countProducts" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM products
+        <where>
+            <if test="name != null and name != ''">
+                name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="categories != null and categories != ''">
+                AND FIND_IN_SET(#{categories}, categories)
+            </if>
+            <if test="tags != null and tags != ''">
+                AND FIND_IN_SET(#{tags}, tags)
+            </if>
+            <if test="minPrice != null and maxPrice != null">
+                AND price BETWEEN #{minPrice} AND #{maxPrice}
+            </if>
+        </where>
+    </select>
+
+    <select id="allCategories" resultType="java.lang.String">
+        select name from categories
+    </select>
+    <select id="allTags" resultType="java.lang.String">
+        select name from tags
+    </select>
+
+
+</mapper>
