@@ -29,13 +29,23 @@ public class paymentController {
             String productName = product.get("name");
             String productImage = product.get("image");
 
-            int amount = (int) data.get("amount");
+            long amountInCents;
+
+            if (data.get("amount") instanceof Double) {
+                double amount = (double) data.get("amount");
+                amountInCents = Math.round(amount * 100);
+            } else if (data.get("amount") instanceof Integer) {
+                int amount = (int) data.get("amount");
+                amountInCents = amount * 100L;
+            } else {
+                throw new IllegalArgumentException("Amount must be an integer or a double");
+            }
 
             SessionCreateParams params =
                     SessionCreateParams.builder()
                             .setUiMode(SessionCreateParams.UiMode.EMBEDDED)
                             .setMode(SessionCreateParams.Mode.PAYMENT)
-                            .setReturnUrl("http://localhost:5173"+"?session_id={CHECKOUT_SESSION_ID}")
+                            .setReturnUrl("http://localhost:5173/payment-result"+"?session_id={CHECKOUT_SESSION_ID}")
                             .setAutomaticTax(
                                     SessionCreateParams.AutomaticTax.builder()
                                             .setEnabled(true)
@@ -45,7 +55,7 @@ public class paymentController {
                                             .setPriceData(
                                                     SessionCreateParams.LineItem.PriceData.builder()
                                                             .setCurrency("hkd")
-                                                            .setUnitAmount((long) amount * 100) // Amount in cents
+                                                            .setUnitAmount(amountInCents) // Amount in cents
                                                             .setProductData(
                                                                     SessionCreateParams.LineItem.PriceData.ProductData.builder()
                                                                             .setName(productName)
@@ -59,6 +69,21 @@ public class paymentController {
             Session session = Session.create(params);
             responseData.put("clientSecret", session.getRawJsonObject().getAsJsonPrimitive("client_secret").getAsString());
 
+        } catch (StripeException e) {
+            e.printStackTrace();
+            responseData.put("error", e.getMessage());
+        }
+
+        return responseData;
+    }
+    @GetMapping("/status/{sessionId}")
+    public Map<String, String> getSessionStatus(@PathVariable String sessionId) {
+        Stripe.apiKey = stripeApiKey;
+
+        Map<String, String> responseData = new HashMap<>();
+        try {
+            Session session = Session.retrieve(sessionId);
+            responseData.put("status", session.getStatus());
         } catch (StripeException e) {
             e.printStackTrace();
             responseData.put("error", e.getMessage());
