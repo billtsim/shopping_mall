@@ -25,4 +25,6 @@ public interface productService {
     ArrayList<String> allCategories();
 
     ArrayList<String> allTags();
+
+    Integer getProductByName(String name);
 }

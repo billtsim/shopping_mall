@@ -44,6 +44,9 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
         } else if (url.contains("cart")) {
             log.info("application for get cart item");
             return true; //放行
+        } else if (url.contains("order")) {
+            log.info("application for get order information");
+            return true; //放行
         }
 
         // 3. get JWT

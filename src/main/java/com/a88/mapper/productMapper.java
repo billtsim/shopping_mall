@@ -2,6 +2,7 @@ package com.a88.mapper;
 
 import com.a88.Pojo.products;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,4 +23,7 @@ public interface productMapper {
     ArrayList<String> allCategories();
 
     ArrayList<String> allTags();
+
+    @Select("select id from products where name=#{name}")
+    int getProductByName(String name);
 }

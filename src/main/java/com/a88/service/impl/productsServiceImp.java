@@ -180,4 +180,9 @@ public class productsServiceImp implements productService {
     public ArrayList<String> allTags() {
         return PM.allTags();
     }
+
+    @Override
+    public Integer getProductByName(String name) {
+        return PM.getProductByName(name);
+    }
 }
